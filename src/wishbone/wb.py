@@ -23,7 +23,7 @@ with warnings.catch_warnings():
     warnings.simplefilter('ignore')  # catch experimental ipython widget warning
     import seaborn as sns
 
-from tsne import bh_sne
+from sklearn.manifold import TSNE
 from scipy.sparse import csr_matrix, find
 from scipy.sparse.linalg import eigs
 from numpy.linalg import norm
@@ -399,7 +399,8 @@ class SCData:
                                 index=self.data.index)
 
         print('If running in notebook, please look at the command line window for tSNE progress log')
-        self.tsne = pd.DataFrame(bh_sne(data),
+        tsne = TSNE(n_components=2, init='random', random_state=sum(data.shape))
+        self.tsne = pd.DataFrame(tsne.fit_transform(data),
                                  index=self.data.index, columns=['x', 'y'])
 
     def plot_tsne(self, fig=None, ax=None, title='tSNE projection'):
