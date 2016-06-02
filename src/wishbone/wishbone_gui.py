@@ -461,9 +461,9 @@ def launch():
     app = wishbone_gui(None)
     print (platform.system())
     if platform.system() != 'Darwin':
-        self.lift()
-        self.call('wm', 'attributes', '.', '-topmost', True)
-        self.after_idle(root.call, 'wm', 'attributes', '.', '-topmost', False)
+        app.lift()
+        app.call('wm', 'attributes', '.', '-topmost', True)
+        app.after_idle(root.call, 'wm', 'attributes', '.', '-topmost', False)
     else:
         os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "python" to true' ''')
     app.title('Wishbone')
