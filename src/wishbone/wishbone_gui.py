@@ -463,7 +463,7 @@ def launch():
     if platform.system() != 'Darwin':
         app.lift()
         app.call('wm', 'attributes', '.', '-topmost', True)
-        app.after_idle(root.call, 'wm', 'attributes', '.', '-topmost', False)
+        app.after_idle(app.call, 'wm', 'attributes', '.', '-topmost', False)
     else:
         os.system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "python" to true' ''')
     app.title('Wishbone')
