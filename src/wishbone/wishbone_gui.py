@@ -459,7 +459,6 @@ class wishbone_gui(tk.Tk):
 
 def launch():
     app = wishbone_gui(None)
-    print (platform.system())
     if platform.system() != 'Darwin':
         app.lift()
         app.call('wm', 'attributes', '.', '-topmost', True)
