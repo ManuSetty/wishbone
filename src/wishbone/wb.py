@@ -115,6 +115,16 @@ class SCData:
         with open(fout, 'wb') as f:
             pickle.dump(vars(self), f)
 
+    def save_as_wishbone(self, fout: str):
+        """
+        :param fout: str, name of archive to store pickled Wishbone data in. Should end
+          in '.p'.
+        :return: None
+        """
+        wb = wishbone.wb.Wishbone(self, True)
+        wb.save(fout)
+
+
     @classmethod
     def load(cls, fin):
         """
@@ -151,7 +161,7 @@ class SCData:
     def data(self, item):
         if not (isinstance(item, pd.DataFrame)):
             raise TypeError('SCData.data must be of type DataFrame')
-        self._reads = item
+        self._data = item
 
     @property
     def metadata(self):
@@ -259,6 +269,7 @@ class SCData:
 
         # Parse the fcs file
         text, data = fcsparser.parse( fcs_file )
+        data = data.astype(np.float64)
 
         # Extract the S and N features (Indexing assumed to start from 1)
         # Assumes channel names are in S
@@ -279,7 +290,7 @@ class SCData:
         data = data[data_channels]
 
         # Transform if necessary
-        if cofactor is not None:
+        if cofactor is not None or cofactor > 0:
             data = np.arcsinh(np.divide( data, cofactor ))
 
         # Create and return scdata object
@@ -381,7 +392,7 @@ class SCData:
 
 
 
-    def run_tsne(self, n_components=15):
+    def run_tsne(self, n_components=15, perplexity=30):
         """ Run tSNE on the data. tSNE is run on the principal component projections
         for single cell RNA-seq data and on the expression matrix for mass cytometry data
         :param n_components: Number of components to use for running tSNE for single cell 
@@ -399,8 +410,12 @@ class SCData:
             data = pd.DataFrame(np.dot(data, self.pca['loadings'].iloc[:, 0:n_components]),
                                 index=self.data.index)
 
-        print('If running in notebook, please look at the command line window for tSNE progress log')
-        self.tsne = pd.DataFrame(bh_sne(data),
+        # Reduce perplexity if necessary
+        perplexity_limit = 15
+        if data.shape[0] < 100 and perplexity > perplexity_limit:
+            print('Reducing perplexity to %d since there are <100 cells in the dataset. ' % perplexity_limit)
+            perplexity = perplexity_limit
+        self.tsne = pd.DataFrame(bh_sne(data, perplexity=perplexity),
                                  index=self.data.index, columns=['x', 'y'])
 
     def plot_tsne(self, fig=None, ax=None, title='tSNE projection'):
@@ -918,12 +933,12 @@ class SCData:
 
 class Wishbone:
 
-    def __init__(self, scdata):
+    def __init__(self, scdata, ignore_dm_check=False):
         """
         Container class for Wishbone
         :param data:  SCData object
         """
-        if scdata.diffusion_eigenvectors is None:
+        if not ignore_dm_check and scdata.diffusion_eigenvectors is None:
             raise RuntimeError('Please use scdata with diffusion maps run for Wishbone')
 
         self._scdata = scdata
@@ -958,11 +973,11 @@ class Wishbone:
         """
         with open(fin, 'rb') as f:
             data = pickle.load(f)
-        scdata = cls(data['_scdata'])
+        wb = cls(data['_scdata'], True)
         del data['_scdata']
         for k, v in data.items():
-            setattr(scdata, k[1:], v)
-        return scdata
+            setattr(wb, k[1:], v)
+        return wb
 
     @property
     def scdata(self):
