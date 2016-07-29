@@ -134,8 +134,9 @@ class SCData:
         """
         with open(fin, 'rb') as f:
             data = pickle.load(f)
-        scdata = cls(data['_data'], data['_metadata'])
+        scdata = cls(data['_data'], data['_data_type'], data['_metadata'])
         del data['_data']
+        del data['_data_type']
         del data['_metadata']
         for k, v in data.items():
             setattr(scdata, k[1:], v)
@@ -290,7 +291,7 @@ class SCData:
         data = data[data_channels]
 
         # Transform if necessary
-        if cofactor is not None or cofactor > 0:
+        if cofactor is not None and cofactor > 0:
             data = np.arcsinh(np.divide( data, cofactor ))
 
         # Create and return scdata object
