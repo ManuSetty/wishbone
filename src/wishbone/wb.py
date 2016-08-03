@@ -412,6 +412,7 @@ class SCData:
                                 index=self.data.index)
 
         # Reduce perplexity if necessary
+        data = data.astype(np.float64)
         perplexity_limit = 15
         if data.shape[0] < 100 and perplexity > perplexity_limit:
             print('Reducing perplexity to %d since there are <100 cells in the dataset. ' % perplexity_limit)
