@@ -24,7 +24,7 @@ with warnings.catch_warnings():
     warnings.simplefilter('ignore')  # catch experimental ipython widget warning
     import seaborn as sns
 
-from tsne import bh_sne
+import bhtsne
 from scipy.sparse import csr_matrix, find
 from scipy.sparse.linalg import eigs
 from numpy.linalg import norm
@@ -134,8 +134,9 @@ class SCData:
         """
         with open(fin, 'rb') as f:
             data = pickle.load(f)
-        scdata = cls(data['_data'], data['_metadata'])
+        scdata = cls(data['_data'], data['_data_type'], data['_metadata'])
         del data['_data']
+        del data['_data_type']
         del data['_metadata']
         for k, v in data.items():
             setattr(scdata, k[1:], v)
@@ -290,7 +291,7 @@ class SCData:
         data = data[data_channels]
 
         # Transform if necessary
-        if cofactor is not None or cofactor > 0:
+        if cofactor is not None and cofactor > 0:
             data = np.arcsinh(np.divide( data, cofactor ))
 
         # Create and return scdata object
@@ -411,12 +412,14 @@ class SCData:
                                 index=self.data.index)
 
         # Reduce perplexity if necessary
+        data = data.astype(np.float64)
         perplexity_limit = 15
         if data.shape[0] < 100 and perplexity > perplexity_limit:
             print('Reducing perplexity to %d since there are <100 cells in the dataset. ' % perplexity_limit)
             perplexity = perplexity_limit
-        self.tsne = pd.DataFrame(bh_sne(data, perplexity=perplexity),
-                                 index=self.data.index, columns=['x', 'y'])
+        self.tsne = pd.DataFrame(bhtsne.tsne(data, perplexity=perplexity),
+                         index=self.data.index, columns=['x', 'y'])
+        
 
     def plot_tsne(self, fig=None, ax=None, title='tSNE projection'):
         """Plot tSNE projections of the data
@@ -780,8 +783,8 @@ class SCData:
 
     @staticmethod
     def _gmt_options():
-        mouse_options = os.listdir(os.path.expanduser('~/.seqc/tools/mouse'))
-        human_options = os.listdir(os.path.expanduser('~/.seqc/tools/human'))
+        mouse_options = os.listdir(os.path.expanduser('~/.wishbone/tools/mouse'))
+        human_options = os.listdir(os.path.expanduser('~/.wishbone/tools/human'))
         print('Available GSEA .gmt files:\n\nmouse:\n{m}\n\nhuman:\n{h}\n'.format(
                 m='\n'.join(mouse_options),
                 h='\n'.join(human_options)))
@@ -861,7 +864,7 @@ class SCData:
         else:
             if not len(gmt_file) == 2:
                 raise ValueError('gmt_file should be a tuple of (organism, filename).')
-            gmt_file = os.path.expanduser('~/.seqc/tools/{}/{}').format(*gmt_file)
+            gmt_file = os.path.expanduser('~/.wishbone/tools/{}/{}').format(*gmt_file)
 
         if components is None:
             components = self.diffusion_map_correlations.columns
