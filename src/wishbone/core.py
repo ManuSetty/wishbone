@@ -250,22 +250,20 @@ def _trajectory_landmarks(spdists, data, s, waypoints, partial_order,
 	# # calculate all shortest paths
 	print('Determining shortest path distances and perspectives....')
 	graph = nx.Graph(spdists)
+	dist = np.zeros([len(l), data.shape[0]])
+	paths_l2l = list()
 
 	for i in range(len(l)):
+		# Shortest distances and paths
 		temp = nx.single_source_dijkstra(graph, l[i])
 		paths = temp[1]
-		# dist[i, :] = temp[0].values()
+		dist[i, list(temp[0].keys())] = list(temp[0].values())
+		paths_l2l.append( [paths[li] for li in l] )
 
-		if i == 0:
-			dist = [list(temp[0].values())]
-			paths_l2l = [[paths[li] for li in l]]
-		else:
-			dist.append(list(temp[0].values()))
-			paths_l2l.append([paths[li] for li in l])
-
-		unreachable = np.where(dist[i]==np.inf)[0]
+		# Update distances for unreachable cells
+		unreachable = np.where(dist[i, :]==np.inf)[0]
 		if(len(unreachable) > 0):
-			dist[i][unreachable] = max(max(dist))
+			dist[i, unreachable] = np.max(dist[i, dist[i, :] != np.inf])
 		if(verbose):
 			sys.stdout.write('.')
 	print("")

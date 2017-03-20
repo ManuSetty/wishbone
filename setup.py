@@ -14,23 +14,23 @@ call(['pip3', 'install', 'git+https://github.com/jacoblevine/phenograph.git'])
 
 
 setup(name='wishbone',
-      version='0.4.1.1',
+      version='0.4.2',
       description='Wishbone algorithm for identifying bifurcating trajectories from single-cell data',
       author='Manu Setty',
       author_email='manu.talanki@gmail.com',
       package_dir={'': 'src'},
       packages=['wishbone'],
       install_requires=[
-          'numpy>=1.10.0',
-          'pandas>=0.18.0',
-          'scipy>=0.14.0',
+          'numpy>=1.12.0',
+          'pandas>=0.19.2',
+          'scipy>=0.18.1',
           'bhtsne',
-          'matplotlib',
-          'seaborn',
+          'matplotlib>=1.5.1sn',
+          'seaborn>=0.7.1',
           'sklearn',
-          'networkx',
-          'fcsparser',
-          'statsmodels'],
+          'networkx>=1.11',
+          'fcsparser>=0.1.2',
+          'statsmodels>=0.8.0'],
       scripts=['src/wishbone/wishbone_gui.py'],
       )
 
@@ -43,8 +43,6 @@ tools_dir = os.path.expanduser('~/.wishbone/tools')
 if os.path.isdir(tools_dir):
     shutil.rmtree(tools_dir)
 shutil.copytree(setup_dir + '/tools/', tools_dir)
-shutil.unpack_archive(tools_dir + '/DiffusionGeometry.zip', tools_dir +
-                      '/DiffusionGeometry/')
 shutil.unpack_archive(tools_dir + '/mouse_gene_sets.tar.gz', tools_dir)
 shutil.unpack_archive(tools_dir + '/human_gene_sets.tar.gz', tools_dir)
 
