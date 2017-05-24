@@ -100,7 +100,6 @@ class SCData:
         self._diffusion_map_correlations = None
         self._normalized = False
         self._cluster_assignments = None
-        self._axis = 1
 
 
         # Library size
