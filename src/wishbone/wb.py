@@ -253,7 +253,8 @@ class SCData:
             raise RuntimeError('data_type must be either sc-seq or masscyt')
 
         # Read in csv file
-        df = pd.read_csv( counts_csv_file, sep=None, header=0, index_col= 0, engine='python' )
+        df = pd.read_csv( counts_csv_file, sep=None, header=0, index_col= 0,
+        engine='python' )
 
         if cell_axis != 0:
             df = df.transpose()
