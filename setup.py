@@ -30,7 +30,8 @@ setup(name='wishbone',
           'sklearn',
           'networkx>=1.11',
           'fcsparser>=0.1.2',
-          'statsmodels>=0.8.0'],
+          'statsmodels>=0.8.0',
+          'Cython'],
       scripts=['src/wishbone/wishbone_gui.py'],
       )
 
