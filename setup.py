@@ -9,10 +9,6 @@ if sys.version_info.major != 3:
     raise RuntimeError('Wishbone requires Python 3')
 
 
-# install phenograph
-call(['pip3', 'install', 'git+https://github.com/jacoblevine/phenograph.git'])
-
-
 setup(name='wishbone',
       version='0.4.2',
       description='Wishbone algorithm for identifying bifurcating trajectories from single-cell data',
@@ -34,6 +30,9 @@ setup(name='wishbone',
           'Cython'],
       scripts=['src/wishbone/wishbone_gui.py'],
       )
+    
+# install phenograph
+call(['pip', 'install', 'git+https://github.com/jacoblevine/phenograph.git'])
 
 
 # get location of setup.py
