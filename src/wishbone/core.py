@@ -8,6 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 from scipy import sparse, stats
 from numpy import linalg
 from scipy.sparse.linalg import norm
+from scipy.sparse.csgraph import dijkstra
 import networkx as nx
 
 def wishbone(data, s, k=15, l=15, num_graphs=1, num_waypoints=250, 
@@ -206,16 +207,16 @@ def _trajectory_landmarks(spdists, data, s, waypoints, partial_order,
 		s = np.random.choice(s,1,replace=False)
 
 	#if not given landmarks list, decide on random landmarks
-	dijkstra = sparse.csgraph.dijkstra(spdists, directed=False, indices=s)
+	dijkstra_dist_matrix = dijkstra(spdists, directed=False, indices=s)
 	if isinstance(waypoints, int):
 		n_opts = np.arange(0, len(data))
 		if band_sample:
 			n_opts = []
 			window_size = 0.1
-			max_dist = dijkstra.max()
+			max_dist = dijkstra_dist_matrix.max()
 			prc = 0.998
 			while prc > 0.08:
-				band = [i for i in range(len(dijkstra)) if dijkstra[i]>= ((prc-window_size)*max_dist) and dijkstra[i]<=prc*max_dist]
+				band = [i for i in range(len(dijkstra_dist_matrix)) if dijkstra_dist_matrix[i]>= ((prc-window_size)*max_dist) and dijkstra_dist_matrix[i]<=prc*max_dist]
 				n_opts = np.append(n_opts, np.random.choice( band, min(len(band), waypoints[0] - 1 - len(partial_order)), replace=False ))
 				prc = prc - window_size
 
@@ -224,7 +225,7 @@ def _trajectory_landmarks(spdists, data, s, waypoints, partial_order,
 
 		if branch:
 			tailk=30
-			tailband = np.where(dijkstra>=np.percentile(dijkstra, 85))[0]
+			tailband = np.where(dijkstra_dist_matrix>=np.percentile(dijkstra_dist_matrix, 85))[0]
 			tailk = min(len(tailband), tailk, np.floor(len(waypoints)/2))
 			to_replace = np.random.randint(len(waypoints)-1, size=tailk)
 			tailband_sample = np.random.choice( tailband, size=tailk, replace=False)
