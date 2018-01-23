@@ -32,7 +32,7 @@ setup(name='wishbone',
       )
     
 # install phenograph
-call(['pip', 'install', 'git+https://github.com/jacoblevine/phenograph.git'])
+call(['pip3', 'install', 'git+https://github.com/jacoblevine/phenograph.git'])
 
 
 # get location of setup.py
