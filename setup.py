@@ -37,3 +37,20 @@ call(['pip', 'install', 'git+https://github.com/jacoblevine/phenograph.git'])
 
 # get location of setup.py
 setup_dir = os.path.dirname(os.path.realpath(__file__))
+
+# install GSEA, diffusion components
+tools_dir = os.path.expanduser('~/.wishbone/tools')
+if os.path.isdir(tools_dir):
+    shutil.rmtree(tools_dir)
+shutil.copytree(setup_dir + '/tools/', tools_dir)
+shutil.unpack_archive(tools_dir + '/mouse_gene_sets.tar.gz', tools_dir)
+shutil.unpack_archive(tools_dir + '/human_gene_sets.tar.gz', tools_dir)
+
+# Copy test data
+data_dir = os.path.expanduser('~/.wishbone/data')
+if os.path.isdir(data_dir):
+    shutil.rmtree(data_dir)
+shutil.copytree(setup_dir + '/data/', data_dir)
+
+# Create directory for GSEA reports
+os.makedirs( os.path.expanduser('~/.wishbone/gsea/'), exist_ok=True )
