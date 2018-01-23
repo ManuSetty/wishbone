@@ -227,6 +227,8 @@ def _trajectory_landmarks(spdists, data, s, waypoints, partial_order,
 			tailk=30
 			tailband = np.where(dijkstra>=np.percentile(dijkstra, 85))[0]
 			tailk = min(len(tailband), tailk, np.floor(len(waypoints)/2))
+
+            print(tailk)
 			to_replace = np.random.randint(len(waypoints)-1, size=tailk)
 			tailband_sample = np.random.choice( tailband, size=tailk, replace=False)
 			for i in range(len(to_replace)):
