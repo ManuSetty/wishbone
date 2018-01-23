@@ -226,9 +226,8 @@ def _trajectory_landmarks(spdists, data, s, waypoints, partial_order,
 		if branch:
 			tailk=30
 			tailband = np.where(dijkstra>=np.percentile(dijkstra, 85))[0]
-			tailk = min(len(tailband), tailk, np.floor(len(waypoints)/2))
-
-            print(tailk)
+			tailk = int(min(len(tailband), tailk, np.floor(len(waypoints)/2)))
+			
 			to_replace = np.random.randint(len(waypoints)-1, size=tailk)
 			tailband_sample = np.random.choice( tailband, size=tailk, replace=False)
 			for i in range(len(to_replace)):
@@ -342,7 +341,7 @@ def _splittobranches(trajs, t, data, landmarks, dist, paths_l2l):
 	#return with current branches if branch is not found
 	if(len(c_branch) == 1):
 		print('Branch not found\n')
-		I = np.absolute(dist[:len(landmarks)][:]).min()
+		I = np.absolute(dist[:len(landmarks)][:]).min().astype(np.int)
 		RNK = c[I]
 		Y = np.zeros((len(RNK)))
 		pb = t[landmarks[(np.where(c == c_branch[0])[0][0])]]
