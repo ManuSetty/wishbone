@@ -349,14 +349,18 @@ class wishbone_gui(tk.Tk):
         self.wb = wishbone.wb.Wishbone(self.scdata)
 
         if self.cell_gate.get() == 'Use cell gate':
-            self.wb.run_wishbone(start_cell=self.start.get(), k=self.k.get(), components_list=[int(comp) for comp in self.compList.get().split(',')], num_waypoints=self.numWaypoints.get())
+            self.wb.run_wishbone(start_cell=self.start.get(), k=self.k.get(), 
+                                 components_list=[int(comp) for comp in self.compList.get().split(',')], 
+                                 num_waypoints=self.numWaypoints.get(), branch=self.branch.get())
         else:
             #randomly select start cell in gate
             print('Using cell gate:')
             print(self.cell_gate.get())
             start_cell = random.sample(list(self.gates[self.cell_gate.get()]), 1)[0]
             print(start_cell)
-            self.wb.run_wishbone(start_cell=start_cell, k=self.k.get(), components_list=[int(comp) for comp in self.compList.get().split(',')], num_waypoints=self.numWaypoints.get())
+            self.wb.run_wishbone(start_cell=start_cell, k=self.k.get(), 
+                                 components_list=[int(comp) for comp in self.compList.get().split(',')], 
+                                 num_waypoints=self.numWaypoints.get(), branch=self.branch.get())
         
         #enable buttons
         self.wishboneMenu.entryconfig(0, state='normal')
