@@ -1,3 +1,17 @@
+This repository is no longer maintained. Please see https://github.com/dpeerlab/wishbone for the latest version. 
+----------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
 Wishbone 
 --------
 
